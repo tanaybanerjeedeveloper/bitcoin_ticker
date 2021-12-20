@@ -9,7 +9,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   CoinDataService coinDataService = CoinDataService();
-  var usdRate = 0.0;
+  var usdRate = '?';
 
   @override
   void initState() {
@@ -20,7 +20,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _getData() async {
     var data = await coinDataService.getExchangeRateData();
     setState(() {
-      usdRate = data["rate"];
+      usdRate = data["rate"].toStringAsFixed(0);
     });
   }
 
@@ -45,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   padding:
                       EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
                   child: Text(
-                    '1 BTC = ${usdRate.toStringAsFixed(0)} USD',
+                    '1 BTC = $usdRate USD',
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.white, fontSize: 20.0),
                   ),
