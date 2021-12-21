@@ -10,6 +10,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   CoinDataService coinDataService = CoinDataService();
   var usdRate = '?';
+  var currency = 'USD';
 
   @override
   void initState() {
@@ -17,11 +18,29 @@ class _MyHomePageState extends State<MyHomePage> {
     _getData();
   }
 
+  //this func gets the data from the api and updates the state with the data.
   void _getData() async {
     var data = await coinDataService.getExchangeRateData();
     setState(() {
       usdRate = data["rate"].toStringAsFixed(0);
     });
+  }
+
+  DropdownButton<String> _getMaterialDropDownButton() {
+    return DropdownButton<String>(
+      value: currency,
+      items: currenciesList.map((item) {
+        return DropdownMenuItem(
+          child: Text(item),
+          value: item,
+        );
+      }).toList(),
+      onChanged: (value) {
+        setState(() {
+          currency = value;
+        });
+      },
+    );
   }
 
   @override
@@ -37,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Padding(
               padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
               child: Card(
-                color: Colors.deepPurple,
+                color: Theme.of(context).primaryColor,
                 elevation: 5.0,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0)),
@@ -47,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Text(
                     '1 BTC = $usdRate USD',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white, fontSize: 20.0),
+                    style: TextStyle(color: Colors.black, fontSize: 20.0),
                   ),
                 ),
               ),
@@ -55,14 +74,9 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               width: double.infinity,
               height: 150.0,
-              color: Colors.deepPurple,
+              color: Theme.of(context).primaryColor,
               child: Center(
-                child: Text(
-                  'AUD',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
+                child: _getMaterialDropDownButton(),
               ),
             ),
           ],
