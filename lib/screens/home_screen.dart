@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'dart:io' show Platform;
 //importing services
 import '../services/coin_data_service.dart';
 
@@ -9,7 +11,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   CoinDataService coinDataService = CoinDataService();
-  var usdRate = '?';
+  var currencyRate = '?';
   var currency = 'USD';
 
   @override
@@ -20,9 +22,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //this func gets the data from the api and updates the state with the data.
   void _getData() async {
-    var data = await coinDataService.getExchangeRateData();
+    var data = await coinDataService.getExchangeRateData(currency);
     setState(() {
-      usdRate = data["rate"].toStringAsFixed(0);
+      currencyRate = data["rate"].toStringAsFixed(0);
     });
   }
 
@@ -39,7 +41,23 @@ class _MyHomePageState extends State<MyHomePage> {
         setState(() {
           currency = value;
         });
+        print(currency);
+        _getData();
       },
+    );
+  }
+
+  CupertinoPicker _getCupertinoPicker() {
+    return CupertinoPicker(
+      itemExtent: 32.0,
+      onSelectedItemChanged: (selectedIndex) {
+        setState(() {
+          currency = currenciesList[selectedIndex];
+        });
+      },
+      children: currenciesList.map((item) {
+        return Text(item);
+      }).toList(),
     );
   }
 
@@ -64,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   padding:
                       EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
                   child: Text(
-                    '1 BTC = $usdRate USD',
+                    '1 BTC = $currencyRate $currency',
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.black, fontSize: 20.0),
                   ),
@@ -76,7 +94,9 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 150.0,
               color: Theme.of(context).primaryColor,
               child: Center(
-                child: _getMaterialDropDownButton(),
+                child: Platform.isIOS
+                    ? _getCupertinoPicker()
+                    : _getMaterialDropDownButton(),
               ),
             ),
           ],

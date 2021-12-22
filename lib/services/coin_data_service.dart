@@ -33,9 +33,9 @@ const List<String> cryptoList = [
 ];
 
 class CoinDataService {
-  Future<dynamic> getExchangeRateData() async {
+  Future<dynamic> getExchangeRateData(String currency) async {
     NetworkingService networkingService = NetworkingService(
-        'https://rest.coinapi.io/v1/exchangerate/BTC/USD?apiKey=$apiKey');
+        'https://rest.coinapi.io/v1/exchangerate/BTC/$currency?apiKey=$apiKey');
     var result = await networkingService.getData();
     return result;
   }
