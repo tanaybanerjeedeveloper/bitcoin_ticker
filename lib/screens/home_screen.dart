@@ -13,10 +13,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   CoinDataService coinDataService = CoinDataService();
-  var currencyRate = '?';
+  // var selectedCurrency = 'AUD';
   var currency = 'USD';
   var isWaiting = true;
-  Map<String, dynamic> mapOfResults;
+  Map<String, dynamic> mapOfResults = {};
 
   @override
   void initState() {
@@ -26,11 +26,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //this func gets the data from the api and updates the state with the data.
   void _getData() async {
-    var data = await coinDataService.getExchangeRateData(currency);
-    setState(() {
-      mapOfResults = data;
+    isWaiting = true;
+    try {
+      var data = await coinDataService.getExchangeRateData(currency);
       isWaiting = false;
-    });
+      setState(() {
+        mapOfResults = data;
+      });
+    } catch (e) {
+      print('error $e');
+    }
   }
 
   DropdownButton<String> _getMaterialDropDownButton() {
@@ -46,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
         setState(() {
           currency = value;
         });
-        print(currency);
+
         _getData();
       },
     );
@@ -66,6 +71,11 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  // Column _getCryptoCards() {
+  //   List<CryptoCard> cryptoCards = [];
+  //   cryptoList.map((e) => null)
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,20 +89,12 @@ class _MyHomePageState extends State<MyHomePage> {
             Padding(
               padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
               child: Column(
-                children: [
-                  CryptoCard(
-                      cryptoCurrency: (isWaiting)
-                          ? '?'
-                          : mapOfResults['BTC']['asset_id_base'],
-                      currencyRate: (isWaiting)
-                          ? '?'
-                          : mapOfResults['BTC']['rate'].toStringAsFixed(0),
-                      currency: (isWaiting)
-                          ? '?'
-                          : mapOfResults['BTC']['asset_id_quote']),
-                  // CryptoCard(),
-                  // CryptoCard(),
-                ],
+                children: cryptoList.map((item) {
+                  return CryptoCard(
+                      cryptoCurrency: item,
+                      currencyRate: (isWaiting) ? '?' : mapOfResults[item],
+                      currency: currency);
+                }).toList(),
               ),
             ),
             Container(

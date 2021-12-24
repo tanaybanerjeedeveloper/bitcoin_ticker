@@ -40,7 +40,7 @@ class CoinDataService {
       NetworkingService networkingService = NetworkingService(
           'https://rest.coinapi.io/v1/exchangerate/$item/$currency?apiKey=$apiKey');
       var result = await networkingService.getData();
-      results[item] = result;
+      results[item] = result['rate'].toStringAsFixed(0);
     }
     print('results: $results');
     return results;
