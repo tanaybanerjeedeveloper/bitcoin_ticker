@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'dart:io' show Platform;
 //importing services
 import '../services/coin_data_service.dart';
+//importing widgets
+import '../widgets/crypto_card.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -13,6 +15,8 @@ class _MyHomePageState extends State<MyHomePage> {
   CoinDataService coinDataService = CoinDataService();
   var currencyRate = '?';
   var currency = 'USD';
+  var isWaiting = true;
+  Map<String, dynamic> mapOfResults;
 
   @override
   void initState() {
@@ -24,7 +28,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void _getData() async {
     var data = await coinDataService.getExchangeRateData(currency);
     setState(() {
-      currencyRate = data["rate"].toStringAsFixed(0);
+      mapOfResults = data;
+      isWaiting = false;
     });
   }
 
@@ -73,20 +78,21 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-              child: Card(
-                color: Theme.of(context).primaryColor,
-                elevation: 5.0,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                child: Padding(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
-                  child: Text(
-                    '1 BTC = $currencyRate $currency',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.black, fontSize: 20.0),
-                  ),
-                ),
+              child: Column(
+                children: [
+                  CryptoCard(
+                      cryptoCurrency: (isWaiting)
+                          ? '?'
+                          : mapOfResults['BTC']['asset_id_base'],
+                      currencyRate: (isWaiting)
+                          ? '?'
+                          : mapOfResults['BTC']['rate'].toStringAsFixed(0),
+                      currency: (isWaiting)
+                          ? '?'
+                          : mapOfResults['BTC']['asset_id_quote']),
+                  // CryptoCard(),
+                  // CryptoCard(),
+                ],
               ),
             ),
             Container(
